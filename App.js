@@ -1,20 +1,48 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, Text, View, Button, TextInput, ScrollView, FlatList } from 'react-native';
+
+import GoalItem from './components/GoalItem';
+import GoalInput from './components/GoalInput';
 
 export default function App() {
+  const [courseGoals, setCourseGoals] = useState([])
+
+  const addGoalHandler = (enteredGoaltext) => {
+    console.log(enteredGoaltext)
+    setCourseGoals((currentCourseGoals) => [...currentCourseGoals, { text: enteredGoaltext, key: Math.random().toString() },])
+    console.log("Course Goals: ", courseGoals)
+  }
+
+  const deleteGoalHandler = (key) => {
+    setCourseGoals((currentCourseGoals) => {
+      currentCourseGoals.filter((goal) => {
+        goal.key !== key
+      })
+    })
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View style={styles.appContainer}>
+      <GoalInput onAddGoal={addGoalHandler} />
+      <View style={styles.goalsContainer}>
+        <Text>Here are my goals!!!</Text>
+        <FlatList data={courseGoals} renderItem={(itemData) => {
+          return (
+            <GoalItem text={itemData.item.text} key={itemData.item.key} onDeleteItem={deleteGoalHandler} />
+          )
+        }} />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  appContainer: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: 70,
+    paddingHorizontal: 16,
+  },
+  goalsContainer: {
+    flex: 5
   },
 });
